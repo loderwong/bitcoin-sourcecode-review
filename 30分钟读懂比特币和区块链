@@ -1,0 +1,100 @@
+30分钟读懂比特币和区块链
+题注：本篇尽可能采用最简洁朴实的语言来讲懂比特币的工作原理，阅读本文需要有一点英语，数学和计算机功底，全篇消化下来大致需要30分钟，请准备好时间。
+本文仅为作者的个人理解，如有错误之处，欢迎指出。
+转发须注明原出处。
+本文的写作基于以下的目标：
+做一名理智的人，拒绝人云亦云。
+本文试图用简洁易懂的语言，带你了解比特币中最核心的运行机制。好了，废话不多说。
+1.	部分背景名词介绍
+1）	函数
+本文用到的函数相关概念主要包括函数及反函数，属于基本的数学概念应用，明白如下说明即可：
+函数的基本形式如：Y = f(x1,x2,…)，其中x1，x2及省略号中的内容代表输入内容，Y代表输出内容，f指代某个函数，在本文中你无需知道f到底是哪个函数。
+函数就像一个“合成工厂”，进去的是原料，出来的是目标产品。
+因此函数相当于 原料产品 的过程，
+而反函数是 产品原料 的逆向过程。
+2）	比特币
+比特币是一种去中心化，采用区块链技术的电子货币，于2009年初由中本聪（化名）发明创立，比特币在全世界都可流通，任何人都可参与，具有交易匿名，不受监管等特征，是当前应用最广的电子货币。比特币可被认为是现代电子货币的始祖。本文提到的很多技术和模型都来自比特币。
+3）	加密算法
+一般来说，一个加密过程大致可看成是一个数学函数：
+Encrypted output = f (unencrypted input messages)
+以函数y=x+1为例，x可以被看作明文，y看作密文。
+在计算机系统中加密算法可分两大类：对称算法，非对称算法。
+依然以函数来说，存在反函数F-1的加密算法就叫对称加密算法，简称对称算法，也就是说如果你知道了y，那你一定能反向算出x= F-1(y)。
+非对称加密算法则是那些不存在反函数F-1的加密算法，简称非对称算法。你可能会很疑惑，那当得到加密消息时，我怎么得到明文内容呢？
+重点来了，首先需要介绍两个名词：私钥（private key）和公钥（public key）。公钥和私钥配对组成，它们可相互解锁，提供给别人的那个就叫公钥，自己保留的那个就叫密钥。你可以理解成，公钥相当于你提供给别人的一把锁，当别人想要给你发消息时，就可以用你的公钥来加密消息内容，这样其他人就无法解密该消息，用函数表示就是：
+Encrypted messages = f1 ( unencrypted messages，your public key)
+当你收到加密内容时，私钥就是这把锁的钥匙，只有你拥有，因此也只有你能解开。
+用函数表示就是：
+Uncrypted messages = f2 ( encrypted messages，your private key)
+这两个过程中用到的f1和f2就是加密算法，目前最流行的非对称算法有SHA-1，SHA256，MD5，哈希算法（Hash）等。比特币中用到的就是SHA256加密算法。
+类似SHA256这类的加密算法有个特点，就是只要明文改变一点点，它的密文便会完全不同。例如，
+“The SHA (Secure Hash Algorithm) is one of a number of cryptographic hash functions”的SHA256加密结果为：
+9cfa5ff7f385701ead0fd8dbb9e6c2ebce1805a9071b90f0b180e70db2d47ff6
+但是如果在该段结尾添加个英文的句号，即“The SHA (Secure Hash Algorithm) is one of a number of cryptographic hash functions.”，则加密结果为：
+881e342e0d231f921b83f42713accb00b63e1ee2d773c4abe54d872304daf718
+完全不同的两个密文串。
+2.	比特币哲学
+1)	In bitcoin system, no one is trusted, no one！ 
+在比特币世界，没有可信任的第三方，没有人是可以信任的。因此所有重要的信息都必须是加密的。
+2)	去中心化，或者说去中央银行
+现实世界中，由于中央银行的存在，通货膨胀始终不可避免，这造成了财富洗劫和经济周期性的危机。比特币的设计机制里完全没有任何的可信第三方，完全由peer-to-peer网络自行发展。
+3.	交易（Transaction）和交易链（Transaction Chains）
+先来下个结论：在比特币系统，是没有货币的概念。那如何确定资产归属呢？它给出的方案是通过所有的历史交易链。
+说到Transaction Chains，下面我们先来看看其中的Transaction都长什么样。
+每个Transaction用函数表示，大致如下：
+Transaction = f1 (payer’s signature , payee’s public key)，也就是付款人payer的个人签名加上收款人payee的公钥组成，而其中付款人的个人签名又等于：
+payer’s signature = f2（payer’s private key, messages），
+其中messages大致包括transaction ID，Inputs和Outputs几块内容，用图可如下表示
+
+图中txn是transaction的简写。这个图表示一个交易：Alice向Bob付5个bitcoin。顶部的txn #78A代表transaction ID，Inputs表示引用到的transactions，该transaction引用到了两个transactions，Outputs有两行，其中一行是收款人和数量，另一行是应该退还的零钱。
+因此，Transaction Chains大概就可如下图表示：
+ 
+以上图为例中的txn #78A为例，待付的bitcoin来自从txn #05A和txn #A21收到的共6.0个bitcoin，除了要付给Bob的5.0外，还应该再退还给Alice 1.0个bitcoin。
+那这个transaction chains如何保证支付的安全性呢？
+（1）	先说如何确保付款方拥有足量的货币以支付当前的交易？从前面的图可以看出来，用于本次transaction的支付货币源自之前transaction的所得，而之前transaction又源自再之前的transaction，直至transaction chains的起始节点，因此为了完成检查这次transaction，它需要遍历transaction chains上所有的节点。其实不止是交易需要遍历transaction chains，就连计算他的资产，也是必须向前搜寻直到transaction chains的开始才能得出。事实上，当你第一次使用bitcoin时，你的软件会自动检索transaction chains上所有的节点，这个过程会很漫长甚至可能需要超过一天时间，但是从安全性的角度来看这个过程是值得的，对于每个用户来说，也仅仅是首次使用会耗这么长时间。
+（2）	如何确保是付款人本人支付，而不是其他人盗用？这里需要用到付款人的签名。如果该交易包含付款人的签名，则说明是其本人支付的。还记得付款人的签名是如何生成的吗？
+payer’s signature = f2（payer’s private key, messages）
+用付款人的私钥来对整个transaction内容进行签名，由于所有人都拥有付款人的公钥，因此所有人都能证明该transaction是来自付款人。
+（3）	最后再说如何保证是发给了正确的收款人，而不是第三者？要知道比特币的一个设计核心就是不要信任任何人。这里给出的解决方案就是将收款方提供的公钥作为收款人，也就是这个公司所说的：
+Transaction = f1 (payer’s signature , payee’s public key)
+在该transaction的最外层再用收款人的公钥再次加密，由于只有收款人的密钥才能解开，这样就保证了只有收款安全。
+这个过程就好比说，付款的时候用收款人提供的那把公共锁锁上后扔到公共场所，所有人都能来试着打开这个锁，谁最先打开这个锁，这里面的东西就属于谁。 
+可能有些人会说那如果私钥丢失了怎么办？你的担心是对的，如果一个人的私钥永久丢失了，那么所有与他公钥有关的货币都将会消失，从这个意义上说，比特币模型是通货紧缩的，当然这也只是相对意义上的，因为到时候你也可以将一个bitcoin分成100000个0.000001货币。
+4.	区块链（Block Chains）和 “挖矿”
+前面介绍到了交易链，接下来我们将介绍到大名鼎鼎的区块链和挖矿。
+当系统中的交易多了，同时发生的transaction会很多，如何确定每个transaction的顺序呢？传统的解决方案是，设立一个可信第三方，由它提供标准时间，但是比特币系统中一个核心设计原则就是不要相信任何人，况且这个方案还有个问题：与时间提供者交互的时间越短，他的交易越可能被采纳。
+比特币采用了一个完全不同的顺序机制，下面我们慢慢说起。它将所有已经过收款人认领过的transactions分成两类：一类是已经在Block中的（我们称之为confirmed），另一类是还不在任一Block中的（我们称之为unconfirmed）。比特币的每个用户会把unconfirmed transactions取出一部分来，然后尝试打包成一个块（Block），因此Block结构可如下图所示：
+
+
+
+其中最上面的Block #121A是Block ID，prev指向前一个Block，下面便是这个Block所包含的transactions。
+所有的Block通过链接便形成了区块链（Block Chain），用图可如下所示：
+所有有效的transactions一定是在某个Block中，事实上，上面提到的交易时需要检查所有之前的transactions其实也就是检查Block Chain中的transactions。
+那区块链是如何工作的呢？
+（1）	如何产生一个有效的Block？当任一用户需要新产生一个Block，它将接收到的transactions打包，然后为尝试为这些transactions创建一个有效的Block。这个过程稍微有些复杂，为了方便理解我们同样采用函数的形式来表示:
+Do repeatedly output = f (transactions, previous Block ID， an additional random guess)，until output < target value，
+Then Block ID = the output.
+当得到有效的Block ID也就意味着生成了一个有效的Block。从上面计算可以看到， Block ID = 某一个f(transactions, an additional nonce)
+其中target value是一个预定义目标如要求output有多少个0比特位，而an additional random guess在计算机中也被称为nonce，翻译过来就叫随机数，指的是试出来满足target value的一个值，函数f目前采用的是SHA256加密算法。
+可能有很多人对这个nonce不理解，我先补充解释下。由于加密过程不可逆，因此没有人知道nonce应该等于是哪个值，因此大家的做法是：靠猜，英文叫random guess！随机填入一个数值然后计算。看是否满足条件，不满足接着算，直到找到。
+如果用函数表示这个过程，则可如下数学形式表示：
+有y=f(msg,x)，其中y已知，求解x。这里y代表target value，x代表nonce。
+当有人生成这样有效的Block ID后，它便会将这个Block广播给所有人并且将这个Block放到Block Chain尾部。此时，它便完成了一个新Block，而其他人收到该Block后，则以该Block为新的起点开始计算下一个Block。
+（2）	Double-Pay。Double pay，顾名思义，指的用相同的货币支付两次或更多次。让我们再来看看上述Block产生过程。
+同一时刻可能有无数人都在进行着生产Block的过程，假设同时有两个人都猜出了有效的nonce，得到了有效的Block ID，那此时就会发生如下图的情况：
+
+此时Block Chain便分叉了，就会出现多个分支。如何避免多分支呢？比特币系统给出的解决方案是：选择最长的Block Chain。因此，此时出现多个分支大可不必惊讶， Block Chain在往下发展时，由于新的Block会自动加入到最长的那个分支，其他的分支很快就会被丢弃。那些被丢弃分支上的Blocks中的transactions都会被重新丢到unconfirmed transactions pool，参与后续Block的生成。
+从上述的讨论我们可以发现，仍然以Alice支付给Bob的transaction为例，当Bob看到Alice支付给Bob的transaction进入到了Block Chain后，他便给Alice发货，但是如果此时Alice同样又用这部分货币支付了另外一个transaction，并且假设她可以做到生成另外一个分支并且让另外一个分支更长，则支付给Bob的transaction所在的分支则会被释放，这次transaction也将会在参与下一次产生Block时由于冲突被系统丢弃，最终Bob钱财两空，用图表示就如下：
+
+ 
+此时便出现了double pay问题。那比特币系统如何避免这个问题呢？答案是：NOT SOLVED! 目前比特币系统并没有有效的机制来防止这种情况的发生，对于用户而言只能给出建议是：Bob不要着急发货，要再等几个Block生成，等Block Chain稳定以后再发货，比如5-6个Block后。有人算过以目前的互联网计算能力来看，生成一个Block大概需要10分钟，5-6个Block大概就是1个小时左右。
+注：思考这样一个极端情况，假设有一个不与外界联网的国度A，其内部计算能力很强胜过世界其他地方，经过一段时间后，假设世界范围比特币Block Chain长度100，而A的Block Chain长度达到了100+，如果这时A开始接入互联网，由于只接收最长的Block Chain，于是世界范围的Block Chain都会被抛弃，其中包含的之前交易全都消失…
+（3）	挖矿和初始货币的产生
+由于比特币系统对计算资源消耗特别大，为了鼓励大家参与，它的设计者便设计了如下奖励机制：当生成一个有效Block，便可获得比特币奖励。这些来自系统的奖励便构成了比特币系统的全部货币。由于系统机制是每4年得到的奖励少一半，因此大致算下来比特币总量大概就是2100万了。
+5.	其他问题
+比特币的设计理念非常先进，但是上线几年以来，也逐渐面临着一些新的问题，比如
+（1）	互联网计算能力提高对其系统安全性的威胁。当解密或生成Block需要的时间越来越短时，便会出现更多被盗用的情况。这可能要求新的更高强度的加密算法，这进一步增加了对计算资源的需求，以及消耗。
+（2）	联合矿工的情况，就是多个大型挖矿组织联合起来。当其占用的计算资源比重越来越大时，这个系统将不再公平。
+（3）	随着系统奖励越来越少，可能会发生用户参与度下降的情况。预计可以通过收取交易手续费来得到新的奖励，即每笔交易将不再免费。
+（4）	私钥的安全性问题。就像蛇咬尾的寓言一样，藏起旧的钥匙，就会产生新的钥匙。另外还有密钥丢失或被盗等情况。
+好了。到此，本文便结束了，如果您还有什么疑问，欢迎加入到我们的讨论组参与讨论。
